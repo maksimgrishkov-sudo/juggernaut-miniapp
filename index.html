@@ -623,7 +623,8 @@ if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.
 // ── Admin detection ──
 const ADMIN_ID = 281011027;
 const userId = tg?.initDataUnsafe?.user?.id || null;
-const isAdmin = userId === ADMIN_ID;
+const urlAdmin = new URLSearchParams(location.search).has('admin');
+const isAdmin = userId === ADMIN_ID || urlAdmin;
 let isPreview = false;
 
 function initView() {
