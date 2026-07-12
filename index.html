@@ -303,6 +303,62 @@ body {
 }
 .sheet-feat-check { color: var(--green); flex-shrink: 0; font-size: 16px; }
 
+/* ── Preview bar (admin only) ── */
+.preview-bar {
+  display: none;
+  position: sticky; top: 0; z-index: 50;
+  background: #F0A500; color: #09090F;
+  padding: 8px 16px;
+  font-size: 13px; font-weight: 700;
+  text-align: center; letter-spacing: .4px;
+}
+.preview-bar.show { display: block; }
+
+/* ── Admin panel ── */
+.admin-panel { padding: 0 16px 24px; }
+.admin-header {
+  padding: 20px 0 16px;
+  font-size: 22px; font-weight: 700;
+}
+.admin-sub { font-size: 14px; color: var(--text2); margin-top: 4px; margin-bottom: 20px; }
+.admin-toggle {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; width: 100%; padding: 13px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--r); cursor: pointer; border-style: dashed;
+  font-size: 14px; font-weight: 600; color: var(--text2);
+  margin-bottom: 20px;
+  -webkit-tap-highlight-color: transparent;
+}
+.admin-toggle:active { opacity: .7; }
+
+.admin-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.admin-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px;
+}
+.admin-card-val {
+  font-size: 26px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.admin-card-lbl { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+.admin-section-title {
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px;
+}
+.admin-lead {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+  margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;
+}
+.admin-lead-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.admin-lead-info { flex: 1; min-width: 0; }
+.admin-lead-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.admin-lead-meta { font-size: 12px; color: var(--text2); }
+.admin-lead-budget { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 4px; }
+
 /* ── Toast ── */
 .toast {
   position: fixed;
@@ -316,6 +372,66 @@ body {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
+
+<!-- Preview mode bar -->
+<div class="preview-bar" id="previewBar">👁 РЕЖИМ ПРЕВЬЮ — статистика не пишется &nbsp;·&nbsp; <span onclick="exitPreview()" style="cursor:pointer;text-decoration:underline">Выйти</span></div>
+
+<!-- ═══ ADMIN PAGE ═══ -->
+<div class="page" id="page-admin" style="display:none">
+  <div class="admin-panel">
+    <div class="admin-header">👋 Привет, Максим</div>
+    <div class="admin-sub">Панель владельца · Mini App активен</div>
+
+    <button class="admin-toggle" onclick="enterPreview()">
+      👁 Посмотреть глазами клиента
+    </button>
+
+    <div class="admin-cards">
+      <div class="admin-card">
+        <div class="admin-card-val" id="aStatViews">—</div>
+        <div class="admin-card-lbl">Открытий сегодня</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-val" id="aStatQuiz">—</div>
+        <div class="admin-card-lbl">Квизов пройдено</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-val" id="aStatCta">—</div>
+        <div class="admin-card-lbl">Кликов "Написать"</div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-val" id="aStatLeads">—</div>
+        <div class="admin-card-lbl">Лидов с квиза</div>
+      </div>
+    </div>
+
+    <div class="admin-section-title">Последние заявки из квиза</div>
+    <div id="adminLeads">
+      <div class="admin-lead">
+        <div class="admin-lead-icon">🏠</div>
+        <div class="admin-lead-info">
+          <div class="admin-lead-title">Недвижимость · AI-ответы</div>
+          <div class="admin-lead-meta">12 июля, 21:34</div>
+          <div class="admin-lead-budget">Бюджет: 15–30к</div>
+        </div>
+      </div>
+      <div class="admin-lead">
+        <div class="admin-lead-icon">💇</div>
+        <div class="admin-lead-info">
+          <div class="admin-lead-title">Красота · Запись и бронирование</div>
+          <div class="admin-lead-meta">12 июля, 19:11</div>
+          <div class="admin-lead-budget">Бюджет: до 15к</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);text-align:center;padding:8px 0">
+        Реальные данные появятся после подключения backend API
+      </div>
+    </div>
+
+    <br>
+    <button class="btn btn-ghost" onclick="cta('admin_self')">💬 Открыть @Juggernaut_1981_bot</button>
+  </div>
+</div>
 
 <!-- ═══ PORTFOLIO PAGE ═══ -->
 <div class="scroll-area" id="scrollArea">
@@ -503,6 +619,41 @@ body {
 <script>
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.setAttribute('data-theme', tg.colorScheme); }
+
+// ── Admin detection ──
+const ADMIN_ID = 281011027;
+const userId = tg?.initDataUnsafe?.user?.id || null;
+const isAdmin = userId === ADMIN_ID;
+let isPreview = false;
+
+function initView() {
+  if (isAdmin && !isPreview) {
+    // Показываем админ-панель, скрываем клиентский скроллэйр
+    document.getElementById('page-admin').style.display = 'block';
+    document.getElementById('scrollArea').style.display = 'none';
+    document.querySelector('.tab-bar').style.display = 'none';
+  } else {
+    document.getElementById('page-admin').style.display = 'none';
+    document.getElementById('scrollArea').style.display = '';
+    document.querySelector('.tab-bar').style.display = '';
+    document.getElementById('previewBar').classList.toggle('show', isAdmin && isPreview);
+  }
+}
+
+function enterPreview() {
+  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+  isPreview = true;
+  initView();
+  showTab('portfolio');
+}
+
+function exitPreview() {
+  isPreview = false;
+  initView();
+}
+
+// Инициализируем при старте
+initView();
 
 // ── Tab nav ──
 function showTab(name) {
