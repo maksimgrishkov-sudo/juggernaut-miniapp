@@ -622,7 +622,7 @@ if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.
 const ADMIN_ID = 281011027;
 const userId = tg?.initDataUnsafe?.user?.id ?? null;
 const urlAdmin = new URLSearchParams(location.search).has('admin');
-const isAdmin = Number(userId) === ADMIN_ID || urlAdmin;
+let isAdmin = Number(userId) === ADMIN_ID || urlAdmin;
 let isPreview = false;
 
 // Показываем ID в панели (для отладки)
@@ -659,6 +659,23 @@ function exitPreview() {
 
 // Инициализируем при старте
 initView();
+
+// Тройной тап по заголовку → admin-режим
+let _tapCount = 0, _tapTimer = null;
+document.addEventListener('click', e => {
+  if (!e.target.closest('.page-hero')) return;
+  _tapCount++;
+  clearTimeout(_tapTimer);
+  _tapTimer = setTimeout(() => { _tapCount = 0; }, 600);
+  if (_tapCount >= 3) {
+    _tapCount = 0;
+    if (!isAdmin) {
+      isAdmin = true;
+      initView();
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+  }
+});
 
 // ── Tab nav ──
 function showTab(name) {
