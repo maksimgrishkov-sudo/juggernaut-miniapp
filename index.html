@@ -379,8 +379,6 @@ body {
   <div class="admin-panel">
     <div class="admin-header">👋 Привет, Максим</div>
     <div class="admin-sub">Панель владельца · Mini App активен</div>
-    <div class="admin-sub" style="margin-top:4px;font-size:11px;opacity:.5">TG ID: <span id="aUserId">…</span></div>
-
     <button class="admin-toggle" onclick="enterPreview()">
       👁 Посмотреть глазами клиента
     </button>
@@ -653,15 +651,6 @@ const urlAdmin = new URLSearchParams(location.search).has('admin');
 let isAdmin = Number(userId) === ADMIN_ID || urlAdmin;
 let isPreview = false;
 
-// Показываем ID в панели (для отладки)
-document.addEventListener('DOMContentLoaded', () => {
-  const el = document.getElementById('aUserId');
-  if (el) {
-    const initDataLen = tg?.initData?.length ?? 0;
-    const label = userId !== null ? String(userId) : `(нет · initData:${initDataLen})`;
-    el.textContent = label;
-  }
-});
 
 function initView() {
   if (isAdmin && !isPreview) {
