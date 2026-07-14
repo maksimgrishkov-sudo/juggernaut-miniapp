@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Максим Гришков — Telegram-боты</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 :root {
@@ -655,7 +656,11 @@ let isPreview = false;
 // Показываем ID в панели (для отладки)
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('aUserId');
-  if (el) el.textContent = userId !== null ? String(userId) : '(не определён)';
+  if (el) {
+    const initDataLen = tg?.initData?.length ?? 0;
+    const label = userId !== null ? String(userId) : `(нет · initData:${initDataLen})`;
+    el.textContent = label;
+  }
 });
 
 function initView() {
