@@ -660,22 +660,20 @@ function exitPreview() {
 // Инициализируем при старте
 initView();
 
-// Тройной тап по заголовку → admin-режим
-let _tapCount = 0, _tapTimer = null;
-document.addEventListener('click', e => {
+// Долгий тап (800мс) по hero → admin-режим
+let _holdTimer = null;
+document.addEventListener('touchstart', e => {
   if (!e.target.closest('.page-hero')) return;
-  _tapCount++;
-  clearTimeout(_tapTimer);
-  _tapTimer = setTimeout(() => { _tapCount = 0; }, 600);
-  if (_tapCount >= 3) {
-    _tapCount = 0;
+  _holdTimer = setTimeout(() => {
     if (!isAdmin) {
       isAdmin = true;
       initView();
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
-  }
-});
+  }, 800);
+}, { passive: true });
+document.addEventListener('touchend',  () => clearTimeout(_holdTimer), { passive: true });
+document.addEventListener('touchmove', () => clearTimeout(_holdTimer), { passive: true });
 
 // ── Tab nav ──
 function showTab(name) {
