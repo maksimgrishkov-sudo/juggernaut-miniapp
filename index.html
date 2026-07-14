@@ -632,7 +632,22 @@ if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.
 
 // ── Admin detection ──
 const ADMIN_ID = 281011027;
-const userId = tg?.initDataUnsafe?.user?.id ?? null;
+
+// initDataUnsafe иногда пуст — парсим initData строку как fallback
+function getTgUserId() {
+  const fromUnsafe = tg?.initDataUnsafe?.user?.id;
+  if (fromUnsafe) return fromUnsafe;
+  try {
+    const raw = tg?.initData;
+    if (!raw) return null;
+    const params = new URLSearchParams(raw);
+    const userStr = params.get('user');
+    if (userStr) return JSON.parse(userStr).id;
+  } catch(e) {}
+  return null;
+}
+
+const userId = getTgUserId();
 const urlAdmin = new URLSearchParams(location.search).has('admin');
 let isAdmin = Number(userId) === ADMIN_ID || urlAdmin;
 let isPreview = false;
