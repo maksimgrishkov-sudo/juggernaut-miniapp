@@ -449,6 +449,18 @@ body {
 
   <div class="project-grid">
 
+    <div class="project-card" onclick="openProject('juggernaut')">
+      <div class="proj-icon" style="background:rgba(240,165,0,.15)">⚡</div>
+      <div class="proj-body">
+        <div class="proj-title">Juggernaut v4.0</div>
+        <div class="proj-desc">Живой кейс: AI-воронка + геймификация + рефералка + Mini App. Работает прямо сейчас.</div>
+        <div class="proj-footer">
+          <div class="proj-price">@Juggernaut_1981_bot</div>
+          <div class="proj-tag new" style="background:rgba(240,165,0,.2);color:#D4920A">Кейс ↗</div>
+        </div>
+      </div>
+    </div>
+
     <div class="project-card" onclick="openProject('realtor')">
       <div class="proj-icon" style="background:rgba(99,179,237,.12)">🏠</div>
       <div class="proj-body">
@@ -689,6 +701,31 @@ function showTab(name) {
 
 // ── Project data ──
 const PROJECTS = {
+  juggernaut: {
+    icon: '⚡', color: 'rgba(240,165,0,.15)',
+    title: 'Juggernaut v4.0',
+    price: 'Живое демо', days: 'в продакшне',
+    mockup: `<span class="hi">⚡ @Juggernaut_1981_bot</span>
+
+🤖 Привет! Расскажи о своём бизнесе —
+я подберу решение под твою задачу.
+
+👤 Салон красоты, нужна онлайн-запись
+
+🤖 Понял! ИИ-оценка запроса: <span class="hi">9/10 🔥</span>
+Готовлю персональное КП...
+
+<span class="hi">→ КП отправлено автоматически ✅</span>
+<span class="hi">→ +50 XP · уровень 2 🏆 · реферал +20% 🎁</span>`,
+    feats: [
+      'GigaChat AI квалифицирует лидов и ведёт диалог',
+      'Авто-КП: бот сам отправляет предложение',
+      'Геймификация: XP, уровни, достижения',
+      'Реферальная система с бонусами',
+      'v3.3: Vacbot → авто-питч → авто-ответ на DM',
+      'v4.0: Telegram Mini App — витрина прямо в боте',
+    ]
+  },
   realtor: {
     icon: '🏠', color: 'rgba(99,179,237,.15)',
     title: 'Бот для риэлтора',
@@ -819,7 +856,9 @@ function openProject(key) {
     <div class="sheet-feats">
       ${p.feats.map(f => `<div class="sheet-feat"><span class="sheet-feat-check">✓</span>${f}</div>`).join('')}
     </div>
-    <button class="btn btn-accent" onclick="cta('project_${key}')">💬 Обсудить этот проект</button>
+    <button class="btn btn-accent" onclick="cta('project_${key}')">
+      ${key === 'juggernaut' ? '⚡ Открыть @Juggernaut_1981_bot' : '💬 Обсудить этот проект'}
+    </button>
   `;
   document.getElementById('sheetOverlay').classList.add('open');
   document.getElementById('sheet').classList.add('open');
@@ -833,7 +872,9 @@ function closeSheet() {
 // ── CTA ──
 function cta(src) {
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-  const url = 'https://t.me/Juggernaut_1981_bot';
+  const url = src === 'project_juggernaut'
+    ? 'https://t.me/Juggernaut_1981_bot'
+    : 'https://t.me/LoneGunman81';
   if (tg) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
 
