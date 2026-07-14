@@ -660,20 +660,23 @@ function exitPreview() {
 // Инициализируем при старте
 initView();
 
-// Долгий тап (800мс) по hero → admin-режим
-let _holdTimer = null;
-document.addEventListener('touchstart', e => {
-  if (!e.target.closest('.page-hero')) return;
-  _holdTimer = setTimeout(() => {
+// 3 клика по блоку статистики → admin-режим
+let _tapCount = 0, _tapTimer = null;
+document.addEventListener('mousedown', e => {
+  if (!e.target.closest('.stats-row')) return;
+  e.preventDefault();
+  _tapCount++;
+  clearTimeout(_tapTimer);
+  _tapTimer = setTimeout(() => { _tapCount = 0; }, 800);
+  if (_tapCount >= 3) {
+    _tapCount = 0;
     if (!isAdmin) {
       isAdmin = true;
       initView();
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
-  }, 800);
-}, { passive: true });
-document.addEventListener('touchend',  () => clearTimeout(_holdTimer), { passive: true });
-document.addEventListener('touchmove', () => clearTimeout(_holdTimer), { passive: true });
+  }
+});
 
 // ── Tab nav ──
 function showTab(name) {
