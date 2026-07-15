@@ -520,6 +520,19 @@ body {
       </div>
     </div>
 
+    <div class="project-card" onclick="openProject('school')">
+      <div class="proj-icon" style="background:rgba(59,130,246,.12)">🎓</div>
+      <div class="proj-body">
+        <div class="proj-title">Бот для онлайн-школы</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Онбординг</span>
+          <span class="proj-tag">Домашки</span>
+          <span class="proj-tag">Тесты</span>
+        </div>
+      </div>
+      <span class="proj-arrow">›</span>
+    </div>
+
     <div class="project-card" onclick="openProject('miniapp')">
       <div class="proj-icon" style="background:rgba(34,197,94,.1)">📱</div>
       <div class="proj-body">
@@ -859,6 +872,31 @@ const PROJECTS = {
       'Фолоу-апы если клиент не ответил',
       'Вы подключаетесь только к готовому клиенту',
       'Аналитика: сколько лидов на каждом этапе',
+    ]
+  },
+  school: {
+    icon: '🎓', color: 'rgba(59,130,246,.12)',
+    title: 'Бот для онлайн-школы',
+    price: 'от 15 000 ₽', days: '10–14 дней',
+    mockup: `<span class="hi">🎓 Добро пожаловать на курс!</span>
+
+📚 Модуль 1 · Урок 2 из 5
+<span class="btn-mock">▶️ Смотреть</span><span class="btn-mock">📝 Тест</span><span class="btn-mock">❓ Вопрос</span>
+
+✅ Урок пройден · <span class="hi">+100 XP · прогресс 40%</span>
+
+👤 Сдал домашнее задание
+
+<span class="hi">🤖 Принял! Проверяю...</span>
+→ Преподаватель уведомлён ✅
+→ Следующий урок: завтра в 10:00 🔔`,
+    feats: [
+      'Онбординг: приветствие и доступ к курсу автоматически',
+      'Выдача уроков и материалов по расписанию',
+      'Напоминания о занятиях и дедлайнах',
+      'Приём домашних заданий → уведомление преподавателю',
+      'Тесты и квизы прямо в боте с авто-проверкой',
+      'Напоминание об оплате следующего модуля',
     ]
   },
   miniapp: {
