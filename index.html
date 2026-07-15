@@ -450,8 +450,8 @@ body {
     <div class="project-card" onclick="openProject('juggernaut')">
       <div class="proj-icon" style="background:rgba(240,165,0,.15)">⚡</div>
       <div class="proj-body">
-        <div class="proj-title">Juggernaut v4.0</div>
-        <div class="proj-desc">Живой кейс: AI-воронка + геймификация + рефералка + Mini App. Работает прямо сейчас.</div>
+        <div class="proj-title">Juggernaut v4.1</div>
+        <div class="proj-desc">Живой кейс: AI-воронка + геймификация + рефералка + Mini App + авто фолоу-ап. Работает прямо сейчас.</div>
         <div class="proj-footer">
           <div class="proj-price">@Juggernaut_1981_bot</div>
           <div class="proj-tag new" style="background:rgba(240,165,0,.2);color:#D4920A">Кейс ↗</div>
@@ -736,7 +736,7 @@ function showTab(name) {
 const PROJECTS = {
   juggernaut: {
     icon: '⚡', color: 'rgba(240,165,0,.15)',
-    title: 'Juggernaut v4.0',
+    title: 'Juggernaut v4.1',
     price: 'Живое демо', days: 'в продакшне',
     mockup: `<span class="hi">⚡ @Juggernaut_1981_bot</span>
 
@@ -745,17 +745,20 @@ const PROJECTS = {
 
 👤 Салон красоты, нужна онлайн-запись
 
-🤖 Понял! ИИ-оценка запроса: <span class="hi">9/10 🔥</span>
+🤖 Понял! ИИ-оценка: <span class="hi">9/10 🔥</span>
 Готовлю персональное КП...
 
 <span class="hi">→ КП отправлено автоматически ✅</span>
-<span class="hi">→ +50 XP · уровень 2 🏆 · реферал +20% 🎁</span>`,
+<span class="hi">→ +50 XP · уровень 2 🏆 · реферал +20% 🎁</span>
+
+<span class="hi">💡 Инсайт недели:</span> Салоны красоты с ботом
+для записи получают на 30% меньше отмен`,
     feats: [
       'GigaChat AI квалифицирует лидов и ведёт диалог',
-      'Авто-КП: бот сам отправляет предложение',
-      'Геймификация: XP, уровни, достижения',
-      'Реферальная система с бонусами',
-      'v3.3: Vacbot → авто-питч → авто-ответ на DM',
+      'Персональное КП после квиза в Mini App',
+      'Авто фолоу-ап: бот сам пишет при 20-48ч молчании',
+      'Геймификация: XP, уровни, достижения, рефералка',
+      'Еженедельные инсайты лидам через GigaChat',
       'v4.0: Telegram Mini App — витрина прямо в боте',
     ]
   },
