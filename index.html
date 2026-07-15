@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <title>Максим Гришков — Telegram-боты</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -1052,20 +1051,65 @@ function quizBack() {
 }
 
 function renderResult(wrap) {
-  const budget = answers[2] || 'mid';
+  const industry = answers[0] || 'other';
+  const feature  = answers[1] || 'booking';
+  const budget   = answers[2] || 'mid';
   const r = RESULTS[budget];
-  const fill = '100';
+
+  // Персональный состав по нише + функционалу
+  const FEATS_MAP = {
+    realtor: {
+      booking: ['Каталог объектов с фото и фильтрами', 'Запись на просмотр с выбором даты', 'Напоминание за 1 час', 'Уведомления о новых объектах'],
+      catalog: ['База объектов с поиском', 'Фото-галерея и описание', 'Подбор по параметрам', 'Форма заявки на объект'],
+      ai:      ['AI отвечает на вопросы по объектам', 'Квалификация: бюджет, район, цели', 'Авто-КП для горячих клиентов', 'Передача лида менеджеру'],
+      promo:   ['Рассылка новых объектов по базе', 'Сегментация по интересам', 'Напоминание незакрытым клиентам', 'Аналитика открытий'],
+    },
+    beauty: {
+      booking: ['Запись к мастеру с выбором услуги', 'Показ свободных слотов', 'Напоминание за 24ч и 1ч', 'Авто-отзыв после визита'],
+      catalog: ['Меню услуг с ценами и фото', 'Прайс-лист по категориям', 'Акции и спецпредложения', 'Запись из каталога'],
+      ai:      ['AI отвечает на вопросы о процедурах', 'Подбор услуги по запросу клиента', 'Автоответ 24/7', 'Горячие лиды — сразу мастеру'],
+      promo:   ['Рассылка акций по базе', 'Поздравление с днём рождения', 'Возврат потерянных клиентов', 'Программа лояльности'],
+    },
+    food: {
+      booking: ['Бронирование столика с выбором времени', 'Напоминание гостю', 'Подтверждение от заведения', 'Отмена и перенос'],
+      catalog: ['Меню с фото, описанием, ценами', 'Корзина и оформление заказа', 'Оплата ЮКасса прямо в боте', 'Статус доставки'],
+      ai:      ['AI рекомендует блюда по вкусу', 'Отвечает на вопросы о составе', 'Обрабатывает нестандартные запросы', 'Сбор отзывов'],
+      promo:   ['Рассылка специальных предложений', 'Акция дня / Счастливые часы', 'Программа баллов', 'Реактивация спящих клиентов'],
+    },
+    other: {
+      booking: ['Запись / заявка на услугу', 'Выбор специалиста и времени', 'Напоминания клиенту', 'CRM-уведомления менеджеру'],
+      catalog: ['Каталог товаров или услуг с фото', 'Корзина и оформление заказа', 'Интеграция с оплатой', 'Уведомления о статусе'],
+      ai:      ['AI-ассистент 24/7 — без менеджера', 'Квалификация лидов по скрипту', 'Авто-ответы на типовые вопросы', 'Горячие лиды — вам в Telegram'],
+      promo:   ['База клиентов и рассылки', 'Сегментация по действиям', 'Фолоу-апы и напоминания', 'Аналитика по каждому сообщению'],
+    },
+  };
+
+  const INDUSTRY_LABEL = { realtor:'недвижимости', beauty:'красоты и здоровья', food:'кафе и доставки', other:'вашей сферы' };
+  const FEATURE_LABEL  = { booking:'онлайн-записью', catalog:'каталогом и продажами', ai:'AI-ассистентом', promo:'рассылками' };
+
+  const feats = FEATS_MAP[industry]?.[feature] || FEATS_MAP.other.booking;
+  const indLabel  = INDUSTRY_LABEL[industry];
+  const featLabel = FEATURE_LABEL[feature];
 
   wrap.innerHTML = `
-    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${fill}%"></div></div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:100%"></div></div>
     <div class="result-card">
       <div class="result-emoji">${r.emoji}</div>
       <div class="result-title">${r.title}</div>
       <div class="result-price">${r.price}</div>
       <div class="result-days">⏱ ${r.days}</div>
-      <div class="result-desc">${r.desc}</div>
+      <div class="result-desc">Бот для ${indLabel} с ${featLabel}.</div>
     </div>
-    <button class="btn btn-accent" onclick="cta('quiz_result')" style="margin-bottom:12px">
+
+    <div style="padding:0 4px 4px;margin-bottom:4px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--accent2);margin-bottom:10px">📋 Что войдёт в проект</div>
+      ${feats.map(f => `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">
+        <span style="color:var(--green);font-size:15px;line-height:1.3">✓</span>
+        <span style="font-size:14px;line-height:1.4;color:var(--text)">${f}</span>
+      </div>`).join('')}
+    </div>
+
+    <button class="btn btn-accent" onclick="cta('quiz_result')" style="margin-bottom:10px">
       💬 Обсудить проект с Максимом
     </button>
     <button class="btn btn-ghost" onclick="startQuiz()">
