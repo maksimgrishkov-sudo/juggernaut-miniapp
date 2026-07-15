@@ -460,6 +460,18 @@ body {
       </div>
     </div>
 
+    <div class="project-card" onclick="openProject('vacbot')">
+      <div class="proj-icon" style="background:rgba(20,184,166,.12)">📡</div>
+      <div class="proj-body">
+        <div class="proj-title">Vacbot v3.3</div>
+        <div class="proj-desc">Парсит площадки с заказами, оценивает AI-скорингом и сам пишет отклик. 10 DM в день без участия владельца.</div>
+        <div class="proj-footer">
+          <div class="proj-price">Интеграция</div>
+          <div class="proj-tag new" style="background:rgba(20,184,166,.2);color:#0D9488">Авто ↗</div>
+        </div>
+      </div>
+    </div>
+
     <div class="project-card" onclick="openProject('realtor')">
       <div class="proj-icon" style="background:rgba(99,179,237,.12)">🏠</div>
       <div class="proj-body">
@@ -733,6 +745,31 @@ const PROJECTS = {
       'Реферальная система с бонусами',
       'v3.3: Vacbot → авто-питч → авто-ответ на DM',
       'v4.0: Telegram Mini App — витрина прямо в боте',
+    ]
+  },
+  vacbot: {
+    icon: '📡', color: 'rgba(20,184,166,.12)',
+    title: 'Vacbot v3.3 — авто-питч',
+    price: 'Интеграция', days: 'в продакшне',
+    mockup: `<span class="hi">📡 Новый заказ найден</span>
+
+🔍 Источник: @freelance_zakazy
+📝 "Нужен Telegram-бот для записи клиентов"
+
+<span class="hi">🤖 AI-оценка: 9/10 🔥</span>
+→ Высокорелевантный заказ
+
+✍️ Генерирую отклик...
+
+<span class="hi">📨 Отклик отправлен @username</span>
+→ 3 из 10 откликов за сегодня`,
+    feats: [
+      'Парсит VK, Telegram-каналы и Kwork в реальном времени',
+      'AI-скоринг каждого поста: 1–10 по релевантности',
+      'При оценке 8+ — автоматически пишет DM с питчем',
+      'Питч генерируется под каждый заказ индивидуально',
+      'Лимит 10 откликов в день, окно 9–20ч',
+      'Уведомление владельцу о каждом отправленном отклике',
     ]
   },
   realtor: {
