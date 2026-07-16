@@ -436,22 +436,30 @@ body {
 
     <div class="admin-cards">
       <div class="admin-card">
-        <div class="admin-card-val" id="aStatViews">—</div>
+        <div class="admin-card-val" id="aStatViews">…</div>
         <div class="admin-card-lbl">Открытий сегодня</div>
       </div>
       <div class="admin-card">
-        <div class="admin-card-val" id="aStatQuiz">—</div>
+        <div class="admin-card-val" id="aStatQuiz">…</div>
         <div class="admin-card-lbl">Квизов пройдено</div>
       </div>
       <div class="admin-card">
-        <div class="admin-card-val" id="aStatCta">—</div>
+        <div class="admin-card-val" id="aStatCta">…</div>
         <div class="admin-card-lbl">Кликов "Написать"</div>
       </div>
       <div class="admin-card">
-        <div class="admin-card-val" id="aStatLeads">—</div>
-        <div class="admin-card-lbl">Лидов с квиза</div>
+        <div class="admin-card-val" id="aStatCalc">…</div>
+        <div class="admin-card-lbl">Расчётов отправлено</div>
       </div>
     </div>
+
+    <div class="admin-section-title">Трафик по вкладкам</div>
+    <div id="aStatTabs" style="margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text3)">Загрузка…</div>
+    </div>
+
+    <div class="admin-section-title" style="margin-bottom:8px">Полная статистика</div>
+    <button class="btn btn-ghost" style="margin-bottom:20px" onclick="openDashboard()">📊 Открыть дашборд</button>
 
     <div class="admin-section-title">Последние заявки из квиза</div>
     <div id="adminLeads">
@@ -739,6 +747,21 @@ body {
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.setAttribute('data-theme', tg.colorScheme); }
 
+// ── Analytics (fire-and-forget, silent fail) ──
+const STATS_URL = 'http://72.56.236.144/miniapp/e';
+function track(event, data) {
+  try {
+    fetch(STATS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ e: event, u: String(userId || ''), d: data || {} }),
+      mode: 'no-cors',
+    }).catch(() => {});
+  } catch(e) {}
+}
+// Трекаем открытие
+track('open');
+
 // ── Admin detection ──
 const ADMIN_ID = 281011027;
 
@@ -776,6 +799,50 @@ function initView() {
   }
 }
 
+const STATS_API = 'http://72.56.236.144/miniapp/s';
+const TAB_LABELS = { portfolio: '🗂 Портфолио', price: '💰 Прайс', quiz: '🎯 Квиз', calc: '🧮 Расчёт' };
+
+function loadAdminStats() {
+  fetch(STATS_API, { mode: 'cors' })
+    .then(r => r.json())
+    .then(s => {
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('aStatViews', s.views_today);
+      set('aStatQuiz',  s.quiz_done);
+      set('aStatCta',   s.cta_today);
+      set('aStatCalc',  s.calc_cta);
+
+      const tabs = s.tabs || {};
+      const total = Object.values(tabs).reduce((a, b) => a + b, 0) || 1;
+      const el = document.getElementById('aStatTabs');
+      if (el) {
+        el.innerHTML = Object.entries(tabs).map(([k, v]) => {
+          const pct = Math.round(v / total * 100);
+          return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:90px;font-size:12px;color:var(--text2)">${TAB_LABELS[k] || k}</div>
+            <div style="flex:1;background:var(--s3);border-radius:4px;height:18px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:var(--accent);border-radius:4px;min-width:${v?2:0}px"></div>
+            </div>
+            <div style="width:28px;text-align:right;font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums">${v}</div>
+          </div>`;
+        }).join('');
+      }
+    })
+    .catch(() => {
+      ['aStatViews','aStatQuiz','aStatCta','aStatCalc'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '—';
+      });
+      const el = document.getElementById('aStatTabs');
+      if (el) el.innerHTML = '<div style="font-size:12px;color:var(--text3)">Данные недоступны (нужен HTTPS)</div>';
+    });
+}
+
+function openDashboard() {
+  const url = 'http://72.56.236.144';
+  if (tg) tg.openLink(url); else window.open(url, '_blank');
+}
+
 function enterPreview() {
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
   isPreview = true;
@@ -790,6 +857,7 @@ function exitPreview() {
 
 // Инициализируем при старте
 initView();
+if (isAdmin) loadAdminStats();
 
 // 3 клика по блоку статистики → admin-режим
 let _tapCount = 0, _tapTimer = null;
@@ -816,6 +884,7 @@ function showTab(name) {
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('scrollArea').scrollTop = 0;
+  track('tab_' + name);
 }
 
 // ── Project data ──
@@ -1044,6 +1113,7 @@ function closeSheet() {
 // ── CTA ──
 function cta(src) {
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+  track('cta', { src });
   const url = src === 'project_juggernaut'
     ? 'https://t.me/Juggernaut_1981_bot'
     : 'https://t.me/LoneGunman81';
@@ -1126,6 +1196,7 @@ function renderQuiz() {
 }
 
 function quizPick(idx) {
+  if (step === 0) track('quiz_start');
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
   const opt = QUIZ[step].opts[idx];
   const el = document.querySelectorAll('.quiz-opt')[idx];
@@ -1213,8 +1284,7 @@ function ctaCalc() {
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
   const selected = FEATURES.filter(f => calcState[f.id]).map(f => f.label);
   const total = calcTotal();
-  const days = calcDays();
-  const msg = `Привет! Рассчитал бот через калькулятор:\n${selected.join(', ')}\nИтого: ${fmtPrice(total)}, срок ${days}`;
+  track('calc_cta', { total, features: selected });
   const url = 'https://t.me/LoneGunman81';
   if (tg) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
@@ -1278,7 +1348,7 @@ function renderResult(wrap) {
       </div>`).join('')}
     </div>
 
-    <button class="btn btn-accent" onclick="cta('quiz_result')" style="margin-bottom:10px">
+    <button class="btn btn-accent" onclick="track('quiz_done');cta('quiz_result')" style="margin-bottom:10px">
       💬 Обсудить проект с Максимом
     </button>
     <button class="btn btn-ghost" onclick="startQuiz()">
