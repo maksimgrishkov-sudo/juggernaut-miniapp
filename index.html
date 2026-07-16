@@ -356,6 +356,53 @@ body {
 .admin-lead-meta { font-size: 12px; color: var(--text2); }
 .admin-lead-budget { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 4px; }
 
+/* ── Calculator ── */
+.calc-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.calc-section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--text3);
+  padding: 12px 0 4px;
+}
+.calc-item {
+  background: var(--s1); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: border-color .15s, background .15s;
+  -webkit-tap-highlight-color: transparent; user-select: none;
+}
+.calc-item.checked { border-color: var(--accent); background: rgba(108,71,255,.08); }
+.calc-item.locked { cursor: default; }
+.calc-check {
+  width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+  border: 2px solid var(--text3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+  transition: background .15s, border-color .15s;
+}
+.calc-item.checked .calc-check { background: var(--accent); border-color: var(--accent); }
+.calc-item.locked .calc-check { background: var(--text3); border-color: var(--text3); }
+.calc-label { flex: 1; font-size: 15px; font-weight: 500; }
+.calc-price {
+  font-size: 14px; color: var(--text2);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.calc-item.checked .calc-price { color: var(--accent2); font-weight: 600; }
+
+.calc-total-box {
+  margin: 16px 16px 0;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 20px;
+}
+.calc-total-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.calc-total-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.calc-total-price {
+  font-size: 36px; font-weight: 700;
+  font-variant-numeric: tabular-nums; line-height: 1;
+  background: linear-gradient(135deg, var(--gold) 40%, var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.calc-total-days { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
 /* ── Toast ── */
 .toast {
   position: fixed;
@@ -622,6 +669,35 @@ body {
   </div>
 </div>
 
+<!-- ═══ CALCULATOR PAGE ═══ -->
+<div class="page" id="page-calc">
+
+  <div class="page-hero">
+    <div class="hero-eyebrow">Калькулятор</div>
+    <div class="hero-title">Сколько стоит ваш бот?</div>
+    <div class="hero-sub">Отметьте нужные функции — цена считается в реальном времени.</div>
+  </div>
+
+  <div class="calc-list" id="calcList">
+    <!-- injected by JS -->
+  </div>
+
+  <div class="calc-total-box">
+    <div class="calc-total-label">Итоговая стоимость</div>
+    <div class="calc-total-row">
+      <div>
+        <div class="calc-total-price" id="calcTotalPrice">8 000 ₽</div>
+        <div class="calc-total-days" id="calcTotalDays">⏱ 5–7 дней</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 16px 0;">
+    <button class="btn btn-accent" onclick="ctaCalc()">💬 Обсудить проект</button>
+  </div>
+
+</div>
+
 </div><!-- /scroll-area -->
 
 <!-- Tab bar -->
@@ -637,6 +713,10 @@ body {
   <button class="tab-item" id="tab-quiz" onclick="showTab('quiz'); startQuiz()">
     <span class="tab-icon">🎯</span>
     <span class="tab-label">Квиз</span>
+  </button>
+  <button class="tab-item" id="tab-calc" onclick="showTab('calc'); initCalc()">
+    <span class="tab-icon">🧮</span>
+    <span class="tab-label">Расчёт</span>
   </button>
 </nav>
 
@@ -1051,6 +1131,87 @@ function quizPick(idx) {
 
 function quizBack() {
   if (step > 0) { step--; answers.pop(); renderQuiz(); }
+}
+
+// ── Calculator ──
+const FEATURES = [
+  { id: 'base',    label: 'Базовый бот',               price: 8000,  locked: true },
+  { id: 'booking', label: 'Запись клиентов',            price: 5000 },
+  { id: 'payment', label: 'Оплата ЮКасса / Stripe',     price: 7000 },
+  { id: 'ai',      label: 'AI-диалог / автоответы',     price: 10000 },
+  { id: 'promo',   label: 'Рассылки по базе',           price: 3000 },
+  { id: 'miniapp', label: 'Telegram Mini App',          price: 15000 },
+  { id: 'crm',     label: 'CRM / AmoCRM / Битрикс',     price: 8000 },
+  { id: 'ref',     label: 'Реферальная система',        price: 5000 },
+];
+
+let calcState = {};
+let calcInited = false;
+
+function fmtPrice(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+}
+
+function initCalc() {
+  if (!calcInited) {
+    calcState = { base: true };
+    for (const f of FEATURES) if (!f.locked) calcState[f.id] = false;
+    calcInited = true;
+  }
+  renderCalc();
+}
+
+function toggleFeature(id) {
+  const f = FEATURES.find(x => x.id === id);
+  if (!f || f.locked) return;
+  if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+  calcState[id] = !calcState[id];
+  renderCalc();
+}
+
+function calcTotal() {
+  return FEATURES.filter(f => calcState[f.id]).reduce((s, f) => s + f.price, 0);
+}
+
+function calcDays() {
+  if (calcState['miniapp']) return '14–21 день';
+  const extras = FEATURES.filter(f => f.id !== 'base' && calcState[f.id]).length;
+  if (extras >= 3) return '10–14 дней';
+  if (extras >= 1) return '7–10 дней';
+  return '5–7 дней';
+}
+
+function renderCalc() {
+  const listEl = document.getElementById('calcList');
+  if (!listEl) return;
+
+  listEl.innerHTML = FEATURES.map(f => {
+    const isChecked = calcState[f.id];
+    const priceStr = f.locked ? fmtPrice(f.price) : '+ ' + fmtPrice(f.price);
+    return `<div class="calc-item${isChecked ? ' checked' : ''}${f.locked ? ' locked' : ''}"
+      onclick="toggleFeature('${f.id}')">
+      <div class="calc-check">${isChecked ? '✓' : ''}</div>
+      <div class="calc-label">${f.label}</div>
+      <div class="calc-price">${priceStr}</div>
+    </div>`;
+  }).join('');
+
+  const total = calcTotal();
+  const days = calcDays();
+  const totalEl = document.getElementById('calcTotalPrice');
+  const daysEl  = document.getElementById('calcTotalDays');
+  if (totalEl) totalEl.textContent = fmtPrice(total);
+  if (daysEl)  daysEl.textContent  = '⏱ ' + days;
+}
+
+function ctaCalc() {
+  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+  const selected = FEATURES.filter(f => calcState[f.id]).map(f => f.label);
+  const total = calcTotal();
+  const days = calcDays();
+  const msg = `Привет! Рассчитал бот через калькулятор:\n${selected.join(', ')}\nИтого: ${fmtPrice(total)}, срок ${days}`;
+  const url = 'https://t.me/LoneGunman81';
+  if (tg) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
 
 function renderResult(wrap) {
