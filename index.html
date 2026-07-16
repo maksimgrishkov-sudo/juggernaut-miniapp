@@ -748,7 +748,7 @@ const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.setAttribute('data-theme', tg.colorScheme); }
 
 // ── Analytics (fire-and-forget, silent fail) ──
-const STATS_URL = 'http://72.56.236.144/miniapp/e';
+const STATS_URL = 'https://flat-forest-fa9b.maksimgrishkov.workers.dev/miniapp/e';
 function track(event, data) {
   try {
     fetch(STATS_URL, {
@@ -799,7 +799,7 @@ function initView() {
   }
 }
 
-const STATS_API = 'http://72.56.236.144/miniapp/s';
+const STATS_API = 'https://flat-forest-fa9b.maksimgrishkov.workers.dev/miniapp/s';
 const TAB_LABELS = { portfolio: '🗂 Портфолио', price: '💰 Прайс', quiz: '🎯 Квиз', calc: '🧮 Расчёт' };
 
 function loadAdminStats() {
