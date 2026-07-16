@@ -1,4 +1,4 @@
-<title>Максим Гришков — Telegram-боты</title>
+﻿<title>Максим Гришков — Telegram-боты</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -1210,6 +1210,33 @@ function quizBack() {
   if (step > 0) { step--; answers.pop(); renderQuiz(); }
 }
 
+function ctaQuiz(industry, feature, budget) {
+  track('quiz_done', { industry, feature, budget });
+  const startParam = 'quiz_' + industry + '_' + feature + '_' + budget;
+  const url = 'https://t.me/Juggernaut_1981_bot?start=' + startParam;
+  if (tg) tg.openTelegramLink(url); else window.open(url, '_blank');
+}
+
+function gotoCalcFromQuiz(industry, feature, budget) {
+  const CALC_PRESETS = { booking: ['booking'], catalog: ['payment'], ai: ['ai'], promo: ['promo'] };
+  const BUDGET_PRESETS = { small: [], mid: [], big: ['miniapp', 'ai'] };
+  calcState = { base: true };
+  for (const f of FEATURES) if (!f.locked) calcState[f.id] = false;
+  calcInited = true;
+  const toSelect = [...(CALC_PRESETS[feature] || []), ...(BUDGET_PRESETS[budget] || [])];
+  toSelect.forEach(id => { calcState[id] = true; });
+  track('quiz_to_calc', { industry, feature, budget });
+  showTab('calc');
+  setTimeout(() => {
+    const banner = document.getElementById('calcQuizBanner');
+    if (banner) {
+      banner.style.display = 'flex';
+      const LABELS = { booking:'запись клиентов', catalog:'каталог и продажи', ai:'AI-ассистент', promo:'рассылки' };
+      banner.querySelector('span').textContent = '✨ Настроено по квизу: ' + (LABELS[feature] || feature);
+    }
+  }, 50);
+}
+
 // ── Calculator ──
 const FEATURES = [
   { id: 'base',    label: 'Базовый бот',               price: 8000,  locked: true },
@@ -1348,11 +1375,15 @@ function renderResult(wrap) {
       </div>`).join('')}
     </div>
 
-    <button class="btn btn-accent" onclick="track('quiz_done');cta('quiz_result')" style="margin-bottom:10px">
-      💬 Обсудить проект с Максимом
+    <button class="btn btn-accent" onclick="track('quiz_done');ctaQuiz('${industry}','${feature}','${budget}')" style="margin-bottom:10px">
+      💬 Получить персональный расчёт
+    </button>
+    <button class="btn btn-secondary" onclick="gotoCalcFromQuiz('${industry}','${feature}','${budget}')" style="margin-bottom:10px;background:var(--s2);border:1px solid var(--border)">
+      🧮 Уточнить в калькуляторе
     </button>
     <button class="btn btn-ghost" onclick="startQuiz()">
       Пройти заново
     </button>`;
 }
 </script>
+
