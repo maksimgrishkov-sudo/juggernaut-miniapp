@@ -41,12 +41,14 @@
 body {
   font-family: -apple-system, 'SF Pro Text', 'Roboto', sans-serif;
   background: var(--bg); color: var(--text);
-  min-height: 100dvh; overflow-x: hidden;
+  height: 100dvh; overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column;
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom));
 }
 
 .scroll-area {
-  height: calc(100dvh - var(--tab-h));
+  flex: 1; min-height: 0;
   overflow-y: auto; overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
@@ -300,9 +302,12 @@ body {
 }
 .sheet-feat-check { color: var(--green); flex-shrink: 0; font-size: 16px; }
 
+/* ── Admin page (flex child of body) ── */
+#page-admin { flex: 1; min-height: 0; overflow-y: auto; }
+
 /* ── Preview bar (admin only) ── */
 .preview-bar {
-  display: none;
+  display: none; flex-shrink: 0;
   position: sticky; top: 0; z-index: 50;
   background: #F0A500; color: #09090F;
   padding: 8px 16px;
