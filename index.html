@@ -1174,9 +1174,8 @@ function calcTotal() {
 }
 
 function calcDays() {
-  if (calcState['miniapp']) return '14–21 день';
   const extras = FEATURES.filter(f => f.id !== 'base' && calcState[f.id]).length;
-  if (extras >= 3) return '10–14 дней';
+  if (calcState['miniapp'] || extras >= 3) return '10–14 дней';
   if (extras >= 1) return '7–10 дней';
   return '5–7 дней';
 }
