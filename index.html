@@ -604,6 +604,18 @@ body {
       </div>
     </div>
 
+    <div class="project-card" onclick="openProject('web')">
+      <div class="proj-icon" style="background:rgba(34,197,94,.12)">🌐</div>
+      <div class="proj-body">
+        <div class="proj-title">Лендинг + Telegram-виджет</div>
+        <div class="proj-desc">Сайт-визитка или каталог с плавающей кнопкой — открывает живого бота для записи, без звонков.</div>
+        <div class="proj-footer">
+          <div class="proj-price">от 8 000 ₽</div>
+          <div class="proj-tag">Демо ↗</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div style="padding: 20px 16px 0;">
@@ -1079,6 +1091,27 @@ const PROJECTS = {
       'Каталог с поиском, фильтрами и фото',
       'Встроенный квиз и форма заявки',
       'Геймификация, рефералки, аналитика',
+    ]
+  },
+  web: {
+    icon: '🌐', color: 'rgba(34,197,94,.12)',
+    title: 'Лендинг + Telegram-виджет',
+    price: 'от 8 000 ₽', days: '2–3 дня',
+    mockup: `<span class="hi">🌐 Сайт салона «Лилия»</span>
+
+Адаптивный лендинг: услуги, цены, отзывы
+
+Плавающая кнопка в углу экрана →
+<span class="hi">💬 Написать нам</span>
+
+Клик открывает живого Telegram-бота
+для записи — без звонков и админа`,
+    feats: [
+      'Адаптивный лендинг под ваш бизнес — от визитки до каталога',
+      'Telegram-виджет: плавающая кнопка открывает бота прямо с сайта',
+      'Не WordPress — чистый HTML/CSS/JS, мгновенная загрузка',
+      'Хостинг без ежемесячной платы за сервер',
+      'Живой пример: maksimgrishkov-sudo.github.io/tg-widget',
     ]
   },
 };
