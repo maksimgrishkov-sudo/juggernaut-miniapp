@@ -851,7 +851,7 @@ function loadAdminStats() {
 }
 
 function openDashboard() {
-  const url = 'http://72.56.236.144';
+  const url = 'https://72.56.236.144.sslip.io/dashboard/';   // был голый IP → заглушка nginx
   if (tg) tg.openLink(url); else window.open(url, '_blank');
 }
 
