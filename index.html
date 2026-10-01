@@ -45,6 +45,8 @@ body {
   -webkit-font-smoothing: antialiased;
   display: flex; flex-direction: column;
   padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom));
+  /* полный экран (v5.3): сверху кнопки Telegram «Закрыть» и «⋯» — отступы сообщает сам Telegram */
+  padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
 .scroll-area {
@@ -510,7 +512,7 @@ body {
     <div class="project-card" onclick="openProject('juggernaut')">
       <div class="proj-icon" style="background:rgba(240,165,0,.15)">⚡</div>
       <div class="proj-body">
-        <div class="proj-title">Juggernaut v5.2</div>
+        <div class="proj-title">Juggernaut v5.3</div>
         <div class="proj-desc">Живой кейс: своя CRM в Telegram. ИИ-агент ведёт клиента и считает цену, менеджеры забирают лиды кнопкой, счета и договоры. Работает прямо сейчас.</div>
         <div class="proj-footer">
           <div class="proj-price">@Juggernaut_1981_bot</div>
@@ -758,6 +760,13 @@ body {
 <script>
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); if (tg.colorScheme) document.documentElement.setAttribute('data-theme', tg.colorScheme); }
+// v5.3: на телефоне — на весь экран (Bot API 8.0+); на компьютере полный экран неудобен.
+// Свайп вниз при прокрутке больше не закрывает приложение (Bot API 7.7+).
+try {
+  const mobile = tg && ['ios', 'android', 'android_x'].includes(tg.platform);
+  if (mobile && tg.isVersionAtLeast && tg.isVersionAtLeast('8.0') && tg.requestFullscreen) tg.requestFullscreen();
+  if (tg && tg.isVersionAtLeast && tg.isVersionAtLeast('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+} catch (e) { /* старый клиент Telegram — остаёмся в обычном режиме */ }
 
 // ── Analytics (fire-and-forget, silent fail) ──
 const STATS_URL = 'https://flat-forest-fa9b.maksimgrishkov.workers.dev/miniapp/e';
@@ -903,7 +912,7 @@ function showTab(name) {
 const PROJECTS = {
   juggernaut: {
     icon: '⚡', color: 'rgba(240,165,0,.15)',
-    title: 'Juggernaut v5.2',
+    title: 'Juggernaut v5.3',
     price: 'Живое демо', days: 'в продакшне',
     mockup: `<span class="hi">⚡ @Juggernaut_1981_bot</span>
 
@@ -919,7 +928,7 @@ const PROJECTS = {
 <span class="hi">→ Карточка лида команде: «✋ Беру»</span>
 <span class="hi">→ Клиента взяла Ольга · счёт ЮKassa по кнопке</span>`,
     feats: [
-      'ИИ-агент на GigaChat: цена по прайсу, примеры работ, запись на консультацию',
+      'ИИ-агент на GigaChat: цена по прайсу, примеры работ, запись на консультацию; ответ дописывается на глазах',
       'Команда: менеджеры по ссылке, лиды забирают кнопкой «✋ Беру»',
       'Счета ЮKassa и договоры в PDF — клиенту только после проверки владельцем',
       'Голосовые: расшифровка сообщений клиента и озвучка уведомлений',
