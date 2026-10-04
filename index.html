@@ -860,7 +860,10 @@ function loadAdminStats() {
 }
 
 function openDashboard() {
-  const url = 'https://72.56.236.144.sslip.io/dashboard/';   // был голый IP → заглушка nginx
+  // v4.9: бот кладёт в адрес мини-аппа владельца ключ dk — дашборд в браузере открывается сразу с входом
+  const dk = new URLSearchParams(location.search).get('dk');
+  const base = 'https://72.56.236.144.sslip.io/dashboard/';   // был голый IP → заглушка nginx
+  const url = dk ? base + 'tg?k=' + encodeURIComponent(dk) : base;
   if (tg) tg.openLink(url); else window.open(url, '_blank');
 }
 
